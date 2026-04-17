@@ -6,6 +6,8 @@ struct DashboardView: View {
     let recoveryStatus: String
     let recoverySummary: String
     let drivers: [String]
+    let workoutTitle: String
+    let workoutSummary: String
     let lastRefresh: Date
     let onRefresh: () -> Void
     let onOpenSetup: () -> Void
@@ -69,11 +71,11 @@ struct DashboardView: View {
 
                 SectionCard(title: "Plan", eyebrow: "TODAY") {
                     VStack(alignment: .leading, spacing: 14) {
-                        Text("Strength day")
+                        Text(workoutTitle)
                             .font(.title3.weight(.semibold))
                             .foregroundStyle(.white)
 
-                        Text("Keep your main lift, cap the top set at RPE 7, and leave one set in reserve.")
+                        Text(workoutSummary)
                             .foregroundStyle(AppTheme.secondaryText)
 
                         Text("Updated \(lastRefresh.formatted(date: .omitted, time: .shortened))")

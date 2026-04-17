@@ -25,6 +25,14 @@
 		A00000010000000000000010 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A00000020000000000000010 /* Assets.xcassets */; };
 		A00000010000000000000011 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A00000020000000000000011 /* LaunchScreen.storyboard */; };
 		A00000010000000000000012 /* VantumUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000020000000000000012 /* VantumUITests.swift */; };
+		A00000010000000000000013 /* AppSettingsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000020000000000000016 /* AppSettingsRepository.swift */; };
+		A00000010000000000000014 /* BackgroundRefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000020000000000000017 /* BackgroundRefreshManager.swift */; };
+		A00000010000000000000015 /* RecoveryTimelinePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000020000000000000018 /* RecoveryTimelinePreview.swift */; };
+		A00000010000000000000016 /* WorkoutAdjustmentEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000020000000000000019 /* WorkoutAdjustmentEngine.swift */; };
+		A00000010000000000000017 /* HealthSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000002000000000000001A /* HealthSyncCoordinator.swift */; };
+		A00000010000000000000018 /* ImportCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000002000000000000001B /* ImportCoordinator.swift */; };
+		A00000010000000000000019 /* RecommendationNotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000002000000000000001C /* RecommendationNotificationScheduler.swift */; };
+		A0000001000000000000001A /* ImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000002000000000000001D /* ImportView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +67,14 @@
 		A00000020000000000000013 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A00000020000000000000014 /* Vantum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vantum.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A00000020000000000000015 /* VantumUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VantumUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A00000020000000000000016 /* AppSettingsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsRepository.swift; sourceTree = "<group>"; };
+		A00000020000000000000017 /* BackgroundRefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRefreshManager.swift; sourceTree = "<group>"; };
+		A00000020000000000000018 /* RecoveryTimelinePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryTimelinePreview.swift; sourceTree = "<group>"; };
+		A00000020000000000000019 /* WorkoutAdjustmentEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutAdjustmentEngine.swift; sourceTree = "<group>"; };
+		A0000002000000000000001A /* HealthSyncCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSyncCoordinator.swift; sourceTree = "<group>"; };
+		A0000002000000000000001B /* ImportCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportCoordinator.swift; sourceTree = "<group>"; };
+		A0000002000000000000001C /* RecommendationNotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationNotificationScheduler.swift; sourceTree = "<group>"; };
+		A0000002000000000000001D /* ImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +110,8 @@
 				A00000070000000000000003 /* App */,
 				A00000070000000000000004 /* Core */,
 				A00000070000000000000005 /* Persistence */,
+				A00000070000000000000008 /* Services */,
+				A0000007000000000000000F /* Background */,
 				A00000070000000000000009 /* Features */,
 				A0000007000000000000000A /* Shared */,
 				A0000007000000000000000C /* Resources */,
@@ -125,6 +143,7 @@
 			children = (
 				A00000020000000000000006 /* PersistenceController.swift */,
 				A00000070000000000000006 /* Models */,
+				A00000070000000000000007 /* Repositories */,
 			);
 			path = Persistence;
 			sourceTree = "<group>";
@@ -137,6 +156,26 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		A00000070000000000000007 /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				A00000020000000000000016 /* AppSettingsRepository.swift */,
+			);
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		A00000070000000000000008 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A00000070000000000000010 /* Analytics */,
+				A00000070000000000000011 /* Coaching */,
+				A00000070000000000000012 /* Health */,
+				A00000070000000000000013 /* Import */,
+				A00000070000000000000014 /* Notifications */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		A00000070000000000000009 /* Features */ = {
 			isa = PBXGroup;
 			children = (
@@ -144,6 +183,7 @@
 				A00000070000000000000016 /* Dashboard */,
 				A00000070000000000000017 /* Trends */,
 				A00000070000000000000018 /* Plan */,
+				A0000007000000000000001B /* Import */,
 				A00000070000000000000019 /* Settings */,
 			);
 			path = Features;
@@ -193,6 +233,54 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A0000007000000000000000F /* Background */ = {
+			isa = PBXGroup;
+			children = (
+				A00000020000000000000017 /* BackgroundRefreshManager.swift */,
+			);
+			path = Background;
+			sourceTree = "<group>";
+		};
+		A00000070000000000000010 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				A00000020000000000000018 /* RecoveryTimelinePreview.swift */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
+		A00000070000000000000011 /* Coaching */ = {
+			isa = PBXGroup;
+			children = (
+				A00000020000000000000019 /* WorkoutAdjustmentEngine.swift */,
+			);
+			path = Coaching;
+			sourceTree = "<group>";
+		};
+		A00000070000000000000012 /* Health */ = {
+			isa = PBXGroup;
+			children = (
+				A0000002000000000000001A /* HealthSyncCoordinator.swift */,
+			);
+			path = Health;
+			sourceTree = "<group>";
+		};
+		A00000070000000000000013 /* Import */ = {
+			isa = PBXGroup;
+			children = (
+				A0000002000000000000001B /* ImportCoordinator.swift */,
+			);
+			path = Import;
+			sourceTree = "<group>";
+		};
+		A00000070000000000000014 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				A0000002000000000000001C /* RecommendationNotificationScheduler.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
 		A00000070000000000000015 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
@@ -223,6 +311,14 @@
 				A0000002000000000000000B /* PlanView.swift */,
 			);
 			path = Plan;
+			sourceTree = "<group>";
+		};
+		A0000007000000000000001B /* Import */ = {
+			isa = PBXGroup;
+			children = (
+				A0000002000000000000001D /* ImportView.swift */,
+			);
+			path = Import;
 			sourceTree = "<group>";
 		};
 		A00000070000000000000019 /* Settings */ = {
@@ -357,6 +453,14 @@
 				A0000001000000000000000D /* SectionCard.swift in Sources */,
 				A0000001000000000000000E /* AppTheme.swift in Sources */,
 				A0000001000000000000000F /* Color+Hex.swift in Sources */,
+				A00000010000000000000013 /* AppSettingsRepository.swift in Sources */,
+				A00000010000000000000014 /* BackgroundRefreshManager.swift in Sources */,
+				A00000010000000000000015 /* RecoveryTimelinePreview.swift in Sources */,
+				A00000010000000000000016 /* WorkoutAdjustmentEngine.swift in Sources */,
+				A00000010000000000000017 /* HealthSyncCoordinator.swift in Sources */,
+				A00000010000000000000018 /* ImportCoordinator.swift in Sources */,
+				A00000010000000000000019 /* RecommendationNotificationScheduler.swift in Sources */,
+				A0000001000000000000001A /* ImportView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

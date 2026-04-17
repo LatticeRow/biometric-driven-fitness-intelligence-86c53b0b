@@ -4,6 +4,7 @@ struct SettingsView: View {
     @Binding var reminderEnabled: Bool
 
     let onReviewSetup: () -> Void
+    let onOpenImport: () -> Void
     let onResetPreviewData: () -> Void
 
     @State private var showingResetConfirmation = false
@@ -27,18 +28,27 @@ struct SettingsView: View {
                         .accessibilityIdentifier("reminderToggle")
                 }
 
-                HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 12) {
                     Button("Review setup", action: onReviewSetup)
                         .buttonStyle(.bordered)
                         .controlSize(.large)
                         .tint(AppTheme.cardStroke)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .accessibilityIdentifier("reviewSetupButton")
+
+                    Button("Import", action: onOpenImport)
+                        .buttonStyle(.bordered)
+                        .controlSize(.large)
+                        .tint(AppTheme.cardStroke)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityIdentifier("openImportButton")
 
                     Button("Reset preview", role: .destructive) {
                         showingResetConfirmation = true
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.large)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("resetPreviewButton")
                 }
             }

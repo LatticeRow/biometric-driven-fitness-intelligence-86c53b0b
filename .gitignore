@@ -1,9 +1,11 @@
 .DS_Store
+.agentsight-codex-last.txt
 
 .build/
 build/
 
 DerivedData/
+*.xcresult
 
 *.xcuserstate
 *.xccheckout
@@ -12,6 +14,7 @@ DerivedData/
 xcuserdata/
 *.xcworkspace/xcuserdata/
 *.xcodeproj/xcuserdata/
+.swiftpm/
 
 *.swp
 *.tmp

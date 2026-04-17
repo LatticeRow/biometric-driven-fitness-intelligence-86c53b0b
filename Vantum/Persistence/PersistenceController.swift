@@ -15,6 +15,15 @@ final class PersistenceController {
         do {
             container = try ModelContainer(for: schema, configurations: configuration)
         } catch {
+            if !inMemory,
+               let fallbackContainer = try? ModelContainer(
+                for: schema,
+                configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+               ) {
+                container = fallbackContainer
+                return
+            }
+
             fatalError("Unable to create model container: \(error)")
         }
     }

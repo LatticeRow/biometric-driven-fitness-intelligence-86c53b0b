@@ -40,6 +40,7 @@ enum TrendMetric: String, CaseIterable, Identifiable {
 final class AppCoordinator {
     var selectedTab: AppTab = .dashboard
     var showingOnboarding = false
+    var showingImport = false
 
     var athleteName = "Athlete"
     var onboardingName = ""
@@ -52,6 +53,20 @@ final class AppCoordinator {
 
     var recoveryScore = 82
     var lastRefresh = Date()
+
+    init(settings: AppSettings? = nil) {
+        guard let settings else {
+            return
+        }
+
+        let trimmedName = settings.athleteName.trimmingCharacters(in: .whitespacesAndNewlines)
+        athleteName = trimmedName.isEmpty ? "Athlete" : trimmedName
+        onboardingName = settings.athleteName
+        trainingGoal = TrainingGoal(rawValue: settings.trainingGoal) ?? .strength
+        reminderEnabled = settings.notificationsEnabled
+        planFocus = trainingGoal
+        lastRefresh = settings.updatedAt
+    }
 
     var recoveryStatus: String {
         switch recoveryScore {
@@ -86,20 +101,15 @@ final class AppCoordinator {
         }
     }
 
-    func refreshDashboard(using dateProvider: DateProviding) {
-        lastRefresh = dateProvider.now()
+    func refreshDashboard(using environment: AppEnvironment) {
+        let snapshot = environment.healthSyncCoordinator.nextPreviewSnapshot(
+            currentScore: recoveryScore,
+            dateProvider: environment.dateProvider
+        )
 
-        switch recoveryScore {
-        case 75...:
-            recoveryScore = 71
-            trendMetric = .resting
-        case 55..<75:
-            recoveryScore = 61
-            trendMetric = .weight
-        default:
-            recoveryScore = 82
-            trendMetric = .sleep
-        }
+        recoveryScore = snapshot.recoveryScore
+        trendMetric = snapshot.trendMetric
+        lastRefresh = snapshot.lastRefresh
     }
 
     func presentOnboarding() {
@@ -111,14 +121,49 @@ final class AppCoordinator {
         showingOnboarding = false
     }
 
-    func completeOnboarding() {
+    func presentImport() {
+        showingImport = true
+    }
+
+    func dismissImport() {
+        showingImport = false
+    }
+
+    func completeOnboarding(using environment: AppEnvironment) {
         let trimmedName = onboardingName.trimmingCharacters(in: .whitespacesAndNewlines)
         athleteName = trimmedName.isEmpty ? "Athlete" : trimmedName
         planFocus = trainingGoal
         showingOnboarding = false
+        syncSettings(using: environment)
     }
 
-    func resetPreviewState() {
+    func applyForegroundRefreshPolicy(using environment: AppEnvironment) {
+        let now = environment.dateProvider.now()
+        guard environment.backgroundRefreshManager.shouldRefresh(lastRefresh: lastRefresh, now: now) else {
+            return
+        }
+
+        refreshDashboard(using: environment)
+    }
+
+    func syncSettings(using environment: AppEnvironment) {
+        do {
+            try environment.appSettingsRepository.save(
+                athleteName: athleteName == "Athlete" ? "" : athleteName,
+                trainingGoal: trainingGoal,
+                notificationsEnabled: reminderEnabled
+            )
+        } catch {
+            environment.logger.log("Settings sync failed.")
+        }
+
+        environment.notificationScheduler.applyPreviewPreference(
+            isEnabled: reminderEnabled,
+            logger: environment.logger
+        )
+    }
+
+    func resetPreviewState(using environment: AppEnvironment) {
         onboardingName = ""
         athleteName = "Athlete"
         trainingGoal = .strength
@@ -128,6 +173,7 @@ final class AppCoordinator {
         isDeloadEnabled = false
         recoveryScore = 82
         lastRefresh = Date()
+        syncSettings(using: environment)
     }
 }
 
@@ -141,6 +187,11 @@ struct AppCoordinatorView: View {
     }
 
     var body: some View {
+        let workoutAdjustment = environment.workoutAdjustmentEngine.makeAdjustment(
+            focus: coordinator.planFocus,
+            isDeloadEnabled: coordinator.isDeloadEnabled
+        )
+
         TabView(selection: $coordinator.selectedTab) {
             NavigationStack {
                 DashboardView(
@@ -149,9 +200,11 @@ struct AppCoordinatorView: View {
                     recoveryStatus: coordinator.recoveryStatus,
                     recoverySummary: coordinator.recoverySummary,
                     drivers: coordinator.drivers,
+                    workoutTitle: workoutAdjustment.title,
+                    workoutSummary: workoutAdjustment.summary,
                     lastRefresh: coordinator.lastRefresh,
                     onRefresh: {
-                        coordinator.refreshDashboard(using: environment.dateProvider)
+                        coordinator.refreshDashboard(using: environment)
                         environment.logger.log("Dashboard refreshed.")
                     },
                     onOpenSetup: coordinator.presentOnboarding
@@ -163,7 +216,10 @@ struct AppCoordinatorView: View {
             }
 
             NavigationStack {
-                TrendsView(selectedMetric: $coordinator.trendMetric)
+                TrendsView(
+                    selectedMetric: $coordinator.trendMetric,
+                    timelinePreview: environment.recoveryTimelinePreview
+                )
             }
             .tag(AppTab.trends)
             .tabItem {
@@ -173,7 +229,8 @@ struct AppCoordinatorView: View {
             NavigationStack {
                 PlanView(
                     planFocus: $coordinator.planFocus,
-                    isDeloadEnabled: $coordinator.isDeloadEnabled
+                    isDeloadEnabled: $coordinator.isDeloadEnabled,
+                    workoutAdjustment: workoutAdjustment
                 )
             }
             .tag(AppTab.plan)
@@ -185,7 +242,10 @@ struct AppCoordinatorView: View {
                 SettingsView(
                     reminderEnabled: $coordinator.reminderEnabled,
                     onReviewSetup: coordinator.presentOnboarding,
-                    onResetPreviewData: coordinator.resetPreviewState
+                    onOpenImport: coordinator.presentImport,
+                    onResetPreviewData: {
+                        coordinator.resetPreviewState(using: environment)
+                    }
                 )
             }
             .tag(AppTab.settings)
@@ -193,13 +253,29 @@ struct AppCoordinatorView: View {
                 Label(AppTab.settings.rawValue, systemImage: AppTab.settings.symbolName)
             }
         }
+        .task {
+            coordinator.applyForegroundRefreshPolicy(using: environment)
+        }
+        .onChange(of: coordinator.reminderEnabled) { _, _ in
+            coordinator.syncSettings(using: environment)
+        }
         .sheet(isPresented: $coordinator.showingOnboarding) {
             OnboardingView(
                 athleteName: $coordinator.onboardingName,
                 trainingGoal: $coordinator.trainingGoal,
                 reminderEnabled: $coordinator.reminderEnabled,
                 onClose: coordinator.dismissOnboarding,
-                onSave: coordinator.completeOnboarding
+                onSave: {
+                    coordinator.completeOnboarding(using: environment)
+                }
+            )
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $coordinator.showingImport) {
+            ImportView(
+                coordinator: environment.importCoordinator,
+                onClose: coordinator.dismissImport
             )
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)

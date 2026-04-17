@@ -3,6 +3,7 @@ import SwiftUI
 struct PlanView: View {
     @Binding var planFocus: TrainingGoal
     @Binding var isDeloadEnabled: Bool
+    let workoutAdjustment: WorkoutAdjustment
 
     var body: some View {
         ScrollView {
@@ -39,11 +40,11 @@ struct PlanView: View {
 
                 SectionCard(title: "Today", eyebrow: "PRESCRIPTION") {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text(sessionTitle)
+                        Text(workoutAdjustment.title)
                             .font(.title3.weight(.semibold))
                             .foregroundStyle(.white)
 
-                        Text(sessionSummary)
+                        Text(workoutAdjustment.summary)
                             .foregroundStyle(AppTheme.secondaryText)
                     }
                 }
@@ -53,35 +54,5 @@ struct PlanView: View {
         .background(AppTheme.sceneBackground.ignoresSafeArea())
         .navigationTitle("Plan")
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private var sessionTitle: String {
-        if isDeloadEnabled {
-            return "Reduced load"
-        }
-
-        switch planFocus {
-        case .strength:
-            return "Heavy compound focus"
-        case .conditioning:
-            return "Aerobic quality focus"
-        case .recovery:
-            return "Recovery-first focus"
-        }
-    }
-
-    private var sessionSummary: String {
-        if isDeloadEnabled {
-            return "Keep the same movements and cut total sets by 20 percent."
-        }
-
-        switch planFocus {
-        case .strength:
-            return "Keep the main lift and trim accessories if recovery slips."
-        case .conditioning:
-            return "Hold a steady interval session unless resting rate climbs."
-        case .recovery:
-            return "Prioritize zone 2 work and mobility."
-        }
     }
 }

@@ -35,6 +35,10 @@ final class VantumUITests: XCTestCase {
         app.switches["reminderToggle"].tap()
         app.buttons["reviewSetupButton"].tap()
         app.buttons["closeOnboardingButton"].tap()
+        app.buttons["openImportButton"].tap()
+        app.buttons["chooseImportFileButton"].tap()
+        app.buttons["OK"].tap()
+        app.buttons["closeImportButton"].tap()
         app.buttons["resetPreviewButton"].tap()
         app.buttons["Cancel"].tap()
     }
